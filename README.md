@@ -46,6 +46,7 @@ Create a .env file in the root directory and add your MySQL credentials:
 
 ```bash
 PORT=3000
+
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=
