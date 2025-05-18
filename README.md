@@ -37,7 +37,8 @@ git clone https://github.com/kayl10913/ASIA-Task-Performance.git
 ### 3. Install Dependencies
 
 ```bash
-npm install
+npm init -y
+npm install express mysql2 cors
 ```
 
 ### 4. Configure .env
