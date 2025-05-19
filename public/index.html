@@ -8,6 +8,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 </head>
 <body>
     <!-- Mobile Navbar (visible below 768px) -->
@@ -77,6 +79,11 @@
               </nav>
             <!-- Main Content -->
             <div class="col py-3 dashboard-content">
+                <div class="mb-3 d-flex flex-wrap gap-2 justify-content-start align-items-center custom-btn-group">
+                    <button class="btn btn-info" id="viewAllStudentsGradesBtn"><i class="bi bi-table"></i> View All Students & Grades</button>
+                    <button class="btn btn-primary" id="addStudentBtn"><i class="bi bi-person-plus"></i> Add Student</button>
+                    <button class="btn btn-success" id="addGradesBtn"><i class="bi bi-journal-plus"></i> Add Grades</button>
+                </div>
                 <div class="row g-4">
                     <div class="col-12">
                         <div class="row mb-3 g-4">
@@ -164,6 +171,108 @@
         </div>
     </div>
 
+    
+    <!-- Add Student Modal -->
+    <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="addStudentModalLabel">Add Student</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form id="studentForm">
+                <div class="mb-3">
+                  <label for="studentName" class="form-label">Name</label>
+                  <input type="text" class="form-control" id="studentName" required>
+                </div>
+                <div class="mb-3">
+                  <label for="studentClass" class="form-label">Class</label>
+                  <select class="form-select" id="studentClass" required>
+                    <option value="">Select class</option>
+                    <option value="10A">10A</option>
+                    <option value="10B">10B</option>
+                    <option value="10C">10C</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="enrollmentDate" class="form-label">Enrollment Date</label>
+                  <input type="date" class="form-control" id="enrollmentDate" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Student</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Add Grades Modal -->
+      <div class="modal fade" id="addGradesModal" tabindex="-1" aria-labelledby="addGradesModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="addGradesModalLabel">Add Grades</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form id="gradesForm">
+                <div class="mb-3">
+                  <label for="gradeStudentId" class="form-label">Student ID</label>
+                  <input type="number" class="form-control" id="gradeStudentId" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Student Name</label>
+                  <input type="text" class="form-control" id="studentNameDisplay" readonly>
+                </div>
+                <div class="mb-3">
+                  <label for="subject" class="form-label">Subject</label>
+                  <select class="form-select" id="subject" required>
+                    <option value="">Select subject</option>
+                    <option value="Math">Math</option>
+                    <option value="Science">Science</option>
+                    <option value="English">English</option>
+                    <option value="Music">Music</option>
+                    <option value="Art">Art</option>
+                    <option value="Geography">Geography</option>
+                    <option value="History">History</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="grade" class="form-label">Grade</label>
+                  <input type="number" class="form-control" id="grade" required>
+                </div>
+                <div class="mb-3">
+                  <label for="gradeLetter" class="form-label">Grade Letter</label>
+                  <input type="text" class="form-control" id="gradeLetter" readonly>
+                </div>
+                <button type="submit" class="btn btn-success">Add Grade</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <!-- All Students with Grades Modal -->
+    <div class="modal fade" id="allStudentsGradesModal" tabindex="-1" aria-labelledby="allStudentsGradesModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="allStudentsGradesModalLabel">All Students</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body row">
+            <div class="col-md-4 border-end" id="studentsListContainer">
+              <div class="text-center py-3">Loading students...</div>
+            </div>
+            <div class="col-md-8" id="studentGradesContainer">
+              <div class="text-center py-3">Select a student to view grades.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="main.js"></script>
@@ -221,5 +330,39 @@
             });
         });
     </script>
+
+    <!-- Place this script before the closing </body> tag -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Modal triggers
+        const addStudentBtn = document.getElementById('addStudentBtn');
+        if (addStudentBtn) {
+            addStudentBtn.addEventListener('click', function() {
+                var addStudentModal = new bootstrap.Modal(document.getElementById('addStudentModal'));
+                addStudentModal.show();
+            });
+        }
+        const addGradesBtn = document.getElementById('addGradesBtn');
+        if (addGradesBtn) {
+            addGradesBtn.addEventListener('click', function() {
+                var addGradesModal = new bootstrap.Modal(document.getElementById('addGradesModal'));
+                addGradesModal.show();
+            });
+        }
+      });
+    </script>
+
+    <!-- Modal Alert -->
+    <div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="alertModalLabel">Notification</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="alertModalCloseBtn"></button>
+          </div>
+          <div class="modal-body" id="alertModalMessage"></div>
+        </div>
+      </div>
+    </div>
 </body>
 </html>
