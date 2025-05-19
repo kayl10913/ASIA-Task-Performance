@@ -11,7 +11,7 @@ ASIA Task Performance/<br>
 ├── db/<br>
 │   └── db.js                 # MySQL connection pool<br>
 ├── public/<br>
-│   └── js/
+│   └── js/<br>
 │   │   ├── charts.js         # Chart rendering functions<br>
 │   │   ├── forms.js          # Form handling logic<br>
 │   │   ├── helpers.js        # Utility/helper functions<br>
