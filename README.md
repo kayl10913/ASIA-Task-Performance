@@ -16,7 +16,7 @@ ASIA Task Performance/<br>
 │   │   ├── forms.js          # Form handling logic<br>
 │   │   ├── helpers.js        # Utility/helper functions<br>
 │   │   ├── init.js           # Initialization and event listeners<br>
-│   │   ├── modals.js         # Modal handling logic
+│   │   ├── modals.js         # Modal handling logic<br>
 │   │   └── navigation.js     # Sidebar and navigation logic<br>
 │   ├── index.html            # Main dashboard HTML<br>
 │   └── style.css             # Dashboard styles<br>
