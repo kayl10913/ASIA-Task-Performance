@@ -38,7 +38,6 @@ window.renderBarChart = function(canvas) {
             });
         });
 };
-
 window.renderPieChart = function(canvas) {
     fetch('http://localhost:3000/api/grades/grade-distribution')
         .then(response => response.json())
@@ -74,7 +73,6 @@ window.renderPieChart = function(canvas) {
             });
         });
 };
-
 window.renderLineChart = function(canvas) {
     fetch('http://localhost:3000/api/grades/grades-over-time')
         .then(response => response.json())
@@ -115,7 +113,6 @@ window.renderLineChart = function(canvas) {
             });
         });
 };
-
 window.renderRadarChart = function(canvas) {
     fetch('http://localhost:3000/api/grades/average-by-subject')
         .then(response => response.json())
@@ -147,7 +144,6 @@ window.renderRadarChart = function(canvas) {
             });
         });
 };
-
 window.renderStudentsPerClassChart = function(canvas) {
     fetch('http://localhost:3000/api/grades/students-per-class')
         .then(response => response.json())
@@ -278,205 +274,4 @@ window.renderTopStudentsChart = function(canvasElementOrId) {
             ctx.fillText("Error loading data", canvas.width / 2, canvas.height / 2);
         });
 };
-
-window.onload = function() {
-    fetch('http://localhost:3000/api/grades/total-students')
-        .then(res => res.json())
-        .then(data => {
-            document.getElementById('totalStudents').textContent = data.total ?? '...';
-        });
-
-    fetch('http://localhost:3000/api/grades/most-students-class')
-        .then(res => res.json())
-        .then(data => {
-            document.getElementById('mostStudentsCount').textContent = data.count ?? '...';
-            document.getElementById('mostStudentsClass').textContent = data.class ? `Class: ${data.class}` : '';
-        });
-
-    const barCanvas = document.getElementById('averageGradesChart');
-    if (barCanvas) window.renderBarChart(barCanvas);
-
-    const pieCanvas = document.getElementById('gradeDistributionChart');
-    if (pieCanvas) window.renderPieChart(pieCanvas);
-
-    const lineCanvas = document.getElementById('gradesOverTimeChart');
-    if (lineCanvas) window.renderLineChart(lineCanvas);
-
-    const radarCanvas = document.getElementById('performanceRadarChart');
-    if (radarCanvas) window.renderRadarChart(radarCanvas);
-
-    const studentsPerClassCanvas = document.getElementById('studentsPerClassChart');
-    if (studentsPerClassCanvas) window.renderStudentsPerClassChart(studentsPerClassCanvas);
-    const topStudentsCanvas = document.getElementById('topStudentsChart');
-    if (topStudentsCanvas) window.renderTopStudentsChart(topStudentsCanvas);
-};
-
-document.addEventListener('DOMContentLoaded', function() {
-    const studentForm = document.getElementById('studentForm');
-    if (studentForm) {
-        studentForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('studentName').value;
-            const studentClass = document.getElementById('studentClass').value;
-            const enrollment_date = document.getElementById('enrollmentDate').value; 
-
-            fetch('http://localhost:3000/api/grades/students', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, class: studentClass, enrollment_date })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    showModalAlert('Student added successfully!');
-                    studentForm.reset();
-                } else {
-                    showModalAlert('Failed to add student.');
-                }
-            })
-            .catch(() => showModalAlert('Error adding student.'));
-        });
-    }
-
-    const gradeInput = document.getElementById('grade');
-    const gradeLetterInput = document.getElementById('gradeLetter');
-    if (gradeInput && gradeLetterInput) {
-        gradeInput.addEventListener('input', function() {
-            const grade = Number(gradeInput.value);
-            let letter = '';
-            if (grade >= 90 && grade <= 100) letter = 'A';
-            else if (grade >= 80 && grade <= 89) letter = 'B';
-            else if (grade >= 70 && grade <= 79) letter = 'C';
-            else if (grade >= 60 && grade <= 69) letter = 'D';
-            else if (grade < 60 && grade !== '') letter = 'F';
-            gradeLetterInput.value = letter;
-        });
-    }
-
-    const gradesForm = document.getElementById('gradesForm');
-    if (gradesForm) {
-        gradesForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const student_id = document.getElementById('gradeStudentId').value;
-            const subject = document.getElementById('subject').value;
-            const grade = document.getElementById('grade').value;
-            const grade_letter = document.getElementById('gradeLetter').value;
-
-            fetch('http://localhost:3000/api/grades/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ student_id, subject, grade, grade_letter })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    showModalAlert('Grade added successfully!');
-                    gradesForm.reset();
-                    document.getElementById('gradeLetter').value = '';
-                } else {
-                    showModalAlert('Failed to add grade.');
-                }
-            })
-            .catch(() => showModalAlert('Error adding grade.'));
-        });
-    }
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    const studentIdInput = document.getElementById('gradeStudentId');
-    const studentNameDisplay = document.getElementById('studentNameDisplay');
-    if (studentIdInput && studentNameDisplay) {
-        studentIdInput.addEventListener('input', function() {
-            const id = studentIdInput.value;
-            if (!id) {
-                studentNameDisplay.value = '';
-                return;
-            }
-            fetch(`http://localhost:3000/api/grades/students/${id}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        studentNameDisplay.value = data.name;
-                    } else {
-                        studentNameDisplay.value = 'Not found';
-                    }
-                })
-                .catch(() => {
-                    studentNameDisplay.value = 'Error';
-                });
-        });
-    }
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    const viewAllBtn = document.getElementById('viewAllStudentsGradesBtn');
-    if (viewAllBtn) {
-        viewAllBtn.addEventListener('click', function() {
-            var modal = new bootstrap.Modal(document.getElementById('allStudentsGradesModal'));
-            modal.show();
-
-            const studentsListContainer = document.getElementById('studentsListContainer');
-            const studentGradesContainer = document.getElementById('studentGradesContainer');
-            studentsListContainer.innerHTML = '<div class="text-center py-3">Loading students...</div>';
-            studentGradesContainer.innerHTML = '<div class="text-center py-3">Select a student to view grades.</div>';
-
-            fetch('http://localhost:3000/api/grades/students')
-                .then(res => res.json())
-                .then(data => {
-                    if (!data.success || !data.data.length) {
-                        studentsListContainer.innerHTML = '<div class="text-center py-3 text-danger">No students found.</div>';
-                        return;
-                    }
-                    let html = '<ul class="list-group">';
-                    data.data.forEach(student => {
-                        html += `<li class="list-group-item list-group-item-action student-name-item" data-student-id="${student.id}" style="cursor:pointer">${student.name}</li>`;
-                    });
-                    html += '</ul>';
-                    studentsListContainer.innerHTML = html;
-
-                    studentsListContainer.querySelectorAll('.student-name-item').forEach(item => {
-                        item.addEventListener('click', function() {
-                            const studentId = this.getAttribute('data-student-id');
-                            const studentName = this.textContent;
-                            studentGradesContainer.innerHTML = '<div class="text-center py-3">Loading grades...</div>';
-                            fetch(`http://localhost:3000/api/grades/students/${studentId}/grades`)
-                                .then(res => res.json())
-                                .then(gradesData => {
-                                    if (!gradesData.success || !gradesData.data.length) {
-                                        studentGradesContainer.innerHTML = `<div class="text-center py-3 text-danger">No grades found for ${studentName}.</div>`;
-                                        return;
-                                    }
-                                    let gradesHtml = `<h6>${studentName}'s Grades</h6>`;
-                                    gradesHtml += `<table class="table table-bordered table-striped"><thead><tr><th>Subject</th><th>Grade</th><th>Letter</th></tr></thead><tbody>`;
-                                    gradesData.data.forEach(g => {
-                                        gradesHtml += `<tr><td>${g.subject}</td><td>${g.grade}</td><td>${g.grade_letter}</td></tr>`;
-                                    });
-                                    gradesHtml += '</tbody></table>';
-                                    studentGradesContainer.innerHTML = gradesHtml;
-                                })
-                                .catch(() => {
-                                    studentGradesContainer.innerHTML = `<div class="text-center py-3 text-danger">Error loading grades for ${studentName}.</div>`;
-                                });
-                        });
-                    });
-                })
-                .catch(() => {
-                    studentsListContainer.innerHTML = '<div class="text-center py-3 text-danger">Error loading students.</div>';
-                });
-        });
-    }
-});
-
-// Helper function to show modal alert
-function showModalAlert(message) {
-    let modal = document.getElementById('alertModal');
-    let msgElem = document.getElementById('alertModalMessage');
-    if (!modal || !msgElem) {
-        // fallback to alert if modal not found
-        alert(message);
-        return;
-    }
-    msgElem.textContent = message;
-    let bsModal = bootstrap.Modal.getOrCreateInstance(modal);
-    bsModal.show();
-}
+// ... existing code ...
