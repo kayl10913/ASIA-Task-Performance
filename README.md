@@ -67,17 +67,24 @@ The server will run at http://localhost:3000.
 
 ### Backend API Overview
 
-- GET /api/grades/average-by-subject — Average grades per subject
-- GET /api/grades/grade-distribution — Grade distribution by letter
-- GET /api/grades/grades-over-time — Average grades over time
-- GET /api/grades/students-per-class — Student count per class
-- GET /api/grades/top-students — Top 5 students by average grade
-- GET /api/grades/grade-count-per-subject — Grade count per subject and letter
-- GET /api/grades/average-grade-per-month — Average grade per month
-- GET /api/grades/student-averages-per-month — Student averages per month
-- GET /api/grades/total-students — Total number of students
-- GET /api/grades/most-students-class — Class with most students
-See backend/routes/grades.js for implementation details.
+- GET /api/grades/students — List of all students  
+- GET /api/grades/students/:id — Get a student’s name by ID  
+- GET /api/grades/students/:id/grades — Get grades for a specific student  
+- GET /api/grades/average-by-subject — Average grades per subject  
+- GET /api/grades/grade-distribution — Grade distribution by letter  
+- GET /api/grades/grades-over-time — Average grades over time  
+- GET /api/grades/students-per-class — Student count per class  
+- GET /api/grades/top-students — Top 5 students by average grade  
+- GET /api/grades/grade-count-per-subject — Grade count per subject and letter  
+- GET /api/grades/average-grade-per-month — Average grade per month  
+- GET /api/grades/student-averages-per-month — Student averages per month  
+- GET /api/grades/total-students — Total number of students  
+- GET /api/grades/most-students-class — Class with most students  
+- POST /api/grades/students — Add a new student  
+- POST /api/grades/ — Add a new grade  
+
+See `backend/routes/grades.js` for implementation details.
+
 
 ### Authors
 
