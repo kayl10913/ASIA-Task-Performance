@@ -274,4 +274,3 @@ window.renderTopStudentsChart = function(canvasElementOrId) {
             ctx.fillText("Error loading data", canvas.width / 2, canvas.height / 2);
         });
 };
-// ... existing code ...
